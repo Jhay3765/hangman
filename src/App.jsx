@@ -9,7 +9,7 @@ import "./App.css";
 
 //@ Make it so only letters can be selected on keyboard
 
-const MAX_ATTEMPTS = 0;
+const MAX_ATTEMPTS = 7;
 
 function App() {
   const [solution, setSolution] = useState([]);
@@ -36,6 +36,9 @@ function App() {
   }, []);
 
   const findLetter = (letter) => {
+    if (isGameOver) {
+      return;
+    }
     console.log("Looking for..." + letter + " in " + initialWord);
     const isLetterInWord = initialWord.includes(letter);
     console.log("isLetterInWord boolean is..." + isLetterInWord);
@@ -44,18 +47,16 @@ function App() {
         console.log("Setting wrong Letters...");
         const newWrongLetters = [...prevWrongLetters];
         newWrongLetters.push(letter);
-
-        setWrongAttemptsCount((prevCount) => {
-          if (prevCount + 1 >= MAX_ATTEMPTS) {
-            setIsGameOver(true);
-            return;
-          }
-          return prevCount + 1;
-        });
-
         return newWrongLetters;
       });
-      console.log("Letter Not Found In Word :(");
+
+      setWrongAttemptsCount((prevCount) => {
+        if (prevCount + 1 >= MAX_ATTEMPTS) {
+          setIsGameOver(true);
+          return;
+        }
+        return prevCount + 1;
+      });
       return;
     }
     const indices = [];
@@ -84,7 +85,7 @@ function App() {
   };
 
   return (
-    <main className="bg-gradient-to-br from-amber-300 to-amber-500 min-h-screen text-amber-950">
+    <main className="bg-gradient-to-br from-amber-200 to-amber-300 min-h-screen text-amber-950">
       <NavBar />
 
       {/*  Board    */}
@@ -97,7 +98,7 @@ function App() {
 
       <p className="text-center mt-4 leading-loose font-semibold">Category</p>
 
-      <ul className="flex flex-wrap mt-8 max-w-3xl mx-auto h-36 w-64 border p-2 gap-4 uppercase">
+      <ul className="flex bg-amber-200 p-2 flex-wrap mt-8 max-w-xl mx-auto h-24 border gap-4 uppercase">
         {wrongLetters
           ? wrongLetters.map((letter, index) => {
               return (
