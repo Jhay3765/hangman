@@ -4,9 +4,9 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 
 //@ Add in Hangman Body
-//@ Setup a game over
+//@ Setup game over and game won UI
 //@ Get a random word for the intial word
-
+//@ Add in computer Keyboard functionality
 //@ Make it so only letters can be selected on keyboard
 
 const MAX_ATTEMPTS = 7;
@@ -21,9 +21,8 @@ function App() {
   const [isGameWon, setIsGameWon] = useState(false);
 
   useEffect(() => {
-    const word = "hello";
-    setInitialWord(word.split(""));
-
+    const word = getNewWord();
+    setInitialWord(word);
     setSolution(Array(word.length).fill(null));
 
     const handleKey = (event) => {
@@ -35,8 +34,23 @@ function App() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  const getNewWord = () => {
+    const word = "Hello";
+    const splitWord = word.toLowerCase().split("");
+    return splitWord;
+  };
+
+  const reset = () => {
+    setSolution(Array(word.length).fill(null));
+    setWrongAttemptsCount(0);
+    set;
+    setIsGameOver(false);
+    setIsGameWonfalse(false);
+    setInitialWord(getNewWord());
+  };
+
   const findLetter = (letter) => {
-    if (isGameOver) {
+    if (isGameOver || isGameWon) {
       return;
     }
     console.log("Looking for..." + letter + " in " + initialWord);
