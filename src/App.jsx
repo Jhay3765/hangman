@@ -86,7 +86,18 @@ function App() {
   return (
     <main className="bg-gradient-to-br from-amber-300 to-amber-500 min-h-screen text-amber-950">
       <NavBar />
-      <ul className="">
+
+      {/*  Board    */}
+
+      <div className="max-w-lg flex justify-between mx-auto mt-24">
+        {solution.map((letter, index) => {
+          return <Tile key={index} letter={letter ?? ""} />;
+        })}
+      </div>
+
+      <p className="text-center mt-4 leading-loose font-semibold">Category</p>
+
+      <ul className="flex flex-wrap mt-8 max-w-3xl mx-auto h-36 w-64 border p-2 gap-4 uppercase">
         {wrongLetters
           ? wrongLetters.map((letter, index) => {
               return (
@@ -97,47 +108,90 @@ function App() {
             })
           : "Wrong Letters will Be Here"}
       </ul>
-      <div className="">
-        {solution.map((letter, index) => {
-          return <Tile key={index} letter={letter ?? ""} />;
-        })}
+      <div className="status">
+        {isGameWon && "You Win"}
+        {isGameOver && "You Lose"}
       </div>
-      <section className=" ">
-        <div className="">{letterAttempt}</div>
-        <button className="" onClick={() => findLetter(letterAttempt)}>
-          Submit
-        </button>
-
-        <div className="status">
-          {isGameWon && "You Win"}
-          {isGameOver && "You Lose"}
-        </div>
-      </section>
+      <Keyboard findLetter={findLetter} />
     </main>
   );
 }
 
 const Tile = (props) => {
-  return <div className="tile">{props.letter}</div>;
+  return (
+    <div className="border-b-4 uppercase text-2xl grid place-content-center h-18 w-18">
+      {props.letter}
+    </div>
+  );
 };
 
 export default App;
 
 const NavBar = () => {
   return (
-    <nav className="flex justify-around">
-      <section className="flex justify-between">
+    <nav className="flex justify-around pt-12 z-20">
+      <section className="flex justify-between gap-8">
         <Button buttonName={"Quit"} />
         <Button buttonName={"Reset"} />
       </section>
-      <h2></h2>
-      <aside></aside>
+      <h2 className="text-5xl font-bold uppercase">Hangman</h2>
+      <aside>
+        <Button buttonName={"Github"} />
+      </aside>
     </nav>
   );
 };
 
 const Button = (props) => {
   return (
-    <button className="underline font-semibold">{props.buttonName}</button>
+    <button className="underline font-semibold cursor-pointer">
+      {props.buttonName}
+    </button>
+  );
+};
+
+const Keyboard = (props) => {
+  const letters = [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+  ];
+
+  return (
+    <ul className="flex flex-wrap max-w-3xl mx-auto gap-2 justify-center mt-8">
+      {letters.map((letter) => {
+        return (
+          <li
+            onClick={() => props.findLetter(letter)}
+            className="uppercase cursor-pointer hover:bg-amber-950 grid place-content-center h-12 w-12 bg-black rounded-lg text-white "
+          >
+            {letter}
+          </li>
+        );
+      })}
+    </ul>
   );
 };
