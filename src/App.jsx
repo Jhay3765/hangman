@@ -8,6 +8,7 @@ import "./App.css";
 //@ Get a random word for the intial word
 //@ Add in computer Keyboard functionality
 //@ Make it so only letters can be selected on keyboard
+//@ Show answer when lost
 
 const MAX_ATTEMPTS = 7;
 
@@ -35,18 +36,21 @@ function App() {
   }, []);
 
   const getNewWord = () => {
-    const word = "Hello";
+    const word = "Crystal";
     const splitWord = word.toLowerCase().split("");
     return splitWord;
   };
 
   const reset = () => {
-    setSolution(Array(word.length).fill(null));
+    const newWord = getNewWord();
+    console.log("Resetting");
+    setSolution(Array(newWord.length).fill(null));
     setWrongAttemptsCount(0);
-    set;
+    setletterAttempt([]);
+    setWrongLetters([]);
     setIsGameOver(false);
-    setIsGameWonfalse(false);
-    setInitialWord(getNewWord());
+    setIsGameWon(false);
+    setInitialWord(newWord);
   };
 
   const findLetter = (letter) => {
@@ -100,11 +104,11 @@ function App() {
 
   return (
     <main className="bg-gradient-to-br from-amber-200 to-amber-300 min-h-screen text-amber-950">
-      <NavBar />
+      <NavBar reset={reset} />
 
       {/*  Board    */}
 
-      <div className="max-w-lg flex justify-between mx-auto mt-24">
+      <div className="max-w-3xl flex justify-between mx-auto mt-24">
         {solution.map((letter, index) => {
           return <Tile key={index} letter={letter ?? ""} />;
         })}
@@ -142,26 +146,29 @@ const Tile = (props) => {
 
 export default App;
 
-const NavBar = () => {
+const NavBar = (props) => {
   return (
     <nav className="flex justify-around pt-12 z-20">
-      <section className="flex justify-between gap-8">
-        <Button buttonName={"Quit"} />
-        <Button buttonName={"Reset"} />
+      <section className="flex justify-between gap-8 items-center">
+        <NavItem buttonName={"Quit"} />
+
+        <button onClick={() => props.reset()}>
+          <NavItem buttonName={"Reset"} />
+        </button>
       </section>
       <h2 className="text-5xl font-bold uppercase">Hangman</h2>
       <aside>
-        <Button buttonName={"Github"} />
+        <NavItem buttonName={"Github"} />
       </aside>
     </nav>
   );
 };
 
-const Button = (props) => {
+const NavItem = (props) => {
   return (
-    <button className="underline font-semibold cursor-pointer">
+    <div className="underline font-semibold cursor-pointer">
       {props.buttonName}
-    </button>
+    </div>
   );
 };
 
@@ -197,9 +204,10 @@ const Keyboard = (props) => {
 
   return (
     <ul className="flex flex-wrap max-w-3xl mx-auto gap-2 justify-center mt-8">
-      {letters.map((letter) => {
+      {letters.map((letter, letterIdx) => {
         return (
           <li
+            key={letterIdx}
             onClick={() => props.findLetter(letter)}
             className="uppercase cursor-pointer hover:bg-amber-950 grid place-content-center h-12 w-12 bg-black rounded-lg text-white "
           >
