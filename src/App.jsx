@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import reactLogo from "./assets/react.svg";
+import { getNewWord } from "./words";
+
 import viteLogo from "/vite.svg";
 import "./App.css";
 
 //@ Add in Hangman Body
-//@ Setup game over and game won UI
-//@ Get a random word for the intial word
 //@ Add in computer Keyboard functionality
 //@ Make it so only letters can be selected on keyboard
-//@ Show answer when lost
+//@ Add Github Link
 
 const MAX_ATTEMPTS = 7;
 
@@ -35,13 +36,7 @@ function App() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  const getNewWord = () => {
-    const word = "Crystal";
-    const splitWord = word.toLowerCase().split("");
-    return splitWord;
-  };
-
-  const reset = () => {
+  const resetGame = () => {
     const newWord = getNewWord();
     console.log("Resetting");
     setSolution(Array(newWord.length).fill(null));
@@ -89,6 +84,7 @@ function App() {
     // });
     setSolution((prevSolution) => {
       console.log("Setting The new solution Array, our index is..." + indices);
+      console.log("Init" + initialWord);
       const newSolution = [...prevSolution];
       for (let index of indices) {
         newSolution[index] = letter;
@@ -104,19 +100,39 @@ function App() {
 
   return (
     <main className="bg-gradient-to-br from-amber-200 to-amber-300 min-h-screen text-amber-950">
-      <NavBar reset={reset} />
+      {isGameOver && (
+        <Status
+          initialWord={initialWord}
+          resetGame={resetGame}
+          status="You Lose"
+        />
+      )}
+      {isGameWon && (
+        <Status
+          initialWord={initialWord}
+          resetGame={resetGame}
+          status="You Win"
+        />
+      )}
+      <NavBar resetGame={resetGame} />
 
       {/*  Board    */}
 
-      <div className="max-w-3xl flex justify-between mx-auto mt-24">
+      <div className="max-w-5xl flex justify-center gap-8 mx-auto mt-24">
         {solution.map((letter, index) => {
           return <Tile key={index} letter={letter ?? ""} />;
         })}
       </div>
 
       <p className="text-center mt-4 leading-loose font-semibold">Category</p>
-
-      <ul className="flex bg-amber-200 p-2 flex-wrap mt-8 max-w-xl mx-auto h-24 border gap-4 uppercase">
+      <div className="text-center font-bold mt-8">
+        Lives Remaining{" "}
+        <span className="text-emerald-700 ml-1">
+          {" "}
+          {MAX_ATTEMPTS - wrongAttemptsCount || 0}
+        </span>
+      </div>
+      <ul className="flex bg-amber-200 p-2 flex-wrap mt-2 max-w-xl mx-auto h-24 border gap-4 uppercase">
         {wrongLetters
           ? wrongLetters.map((letter, index) => {
               return (
@@ -136,6 +152,31 @@ function App() {
   );
 }
 
+const Status = ({ status, resetGame, initialWord }) => {
+  return (
+    <>
+      {createPortal(
+        <div className="fixed backdrop-blur-md z-40 top-0 h-screen  w-full mx-auto  bg-amber-200/50 border p-4 text-center grid place-content-center ">
+          <p className="text-4xl tracking-tighter">{status}</p>
+          <p className="mt-2 ">
+            The word was:{" "}
+            <span className="font-bold text-amber-600">
+              {initialWord.join("")}
+            </span>
+          </p>
+          <button
+            onClick={() => resetGame()}
+            className="px-4 py-1 cursor-pointer mt-8 bg-black text-white"
+          >
+            Try Again
+          </button>
+        </div>,
+        document.body
+      )}
+    </>
+  );
+};
+
 const Tile = (props) => {
   return (
     <div className="border-b-4 uppercase text-2xl grid place-content-center h-18 w-18">
@@ -152,7 +193,7 @@ const NavBar = (props) => {
       <section className="flex justify-between gap-8 items-center">
         <NavItem buttonName={"Quit"} />
 
-        <button onClick={() => props.reset()}>
+        <button onClick={() => props.resetGame()}>
           <NavItem buttonName={"Reset"} />
         </button>
       </section>
